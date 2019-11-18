@@ -96,7 +96,9 @@
 
 			function render(array) {
 				var html = '<div class="row">' + array.map(function (item) {
-					return `<div class="grid"><img src="${item}.svg" alt="monster"></div>`;
+					return `<a class="grid" href="#" role="button">
+										<img src="door.svg" alt="monster" data-monster="${item}">
+									</a>`;
 				}).join('') + '</div>';
 
 				app.innerHTML = html;
@@ -105,6 +107,12 @@
 			// Create a new, shuffled array, then render
 			var shuffled_monsters = shuffle(monsters.slice());
 			render(shuffled_monsters);
+
+			app.addEventListener('click', function (event) {
+				console.log(event.target);
+				var monster = event.target.getAttribute('data-monster');
+				event.target.setAttribute('src', `${monster}.svg`);
+			})
 		})();
 	</script>
 </body>
