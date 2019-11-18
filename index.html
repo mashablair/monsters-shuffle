@@ -44,6 +44,7 @@
 
 	<h1>Monsters!</h1>
 	<p>Click a door to reveal the monster. Try not to find the sock.</p>
+	<p id="message" aria-live="live"></p>
 	<div id="app"></div>
 
 	<footer>
@@ -71,7 +72,9 @@
 				'sock'
 			];
 
-			var app = document.querySelector('#app')
+			var app = document.querySelector('#app');
+			var message = document.querySelector("#message");
+			var count = 0;
 
 			/**
 			 * Randomly shuffle an array
@@ -127,6 +130,16 @@
 
 				var id = monster.getAttribute('data-monster');
 				event.target.parentNode.innerHTML = `<img src="${id}.svg" alt="${id}">`;
+
+				// handle message
+				count++;
+				if (id === "sock" && count <= 11) {
+					message.textContent = "You lost. :(";
+				}
+
+				if (id === "sock" && count === 12) {
+					message.textContent = "Congratulations, you won!";
+				}
 			}
 
 			// Create a new, shuffled array, then render
