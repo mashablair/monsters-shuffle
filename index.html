@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>Monsters!</title>
+	<title>Game Monsters!</title>
 
 	<style type="text/css">
 		body {
@@ -25,6 +25,11 @@
 			padding: 1em;
 		}
 
+		.grid button {
+			background: none;
+			border: none;
+		}
+
 		/**
 		 * Make sure images scale
 		 */
@@ -38,7 +43,7 @@
 <body>
 
 	<h1>Monsters!</h1>
-
+	<p>Click a door to reveal the monster. Try not to find the sock.</p>
 	<div id="app"></div>
 
 	<footer>
@@ -94,25 +99,42 @@
 				return array;
 			};
 
+			/**
+			 * Render the grid doors to the DOM
+			 * @param  {Array} array The monsters array
+			 */
 			function render(array) {
 				var html = '<div class="row">' + array.map(function (item) {
-					return `<a class="grid" href="#" role="button">
-										<img src="door.svg" alt="monster" data-monster="${item}">
-									</a>`;
+					return `<div class="grid" aria-live="polite">
+										<button data-monster="${item}">
+											<img src="door.svg" alt="click to see what\'s behind this door">
+										</button>
+									</div>`;
 				}).join('') + '</div>';
 
 				app.innerHTML = html;
+			}
+
+			/**
+			 * Handle click events
+			 * @param  {Event} event The event object
+			 */
+			function handleClick(event) {
+				console.log(event.target);
+
+				var monster = event.target.closest('[data-monster]');
+				if (!monster) return;
+
+				var id = monster.getAttribute('data-monster');
+				event.target.parentNode.innerHTML = `<img src="${id}.svg" alt="${id}">`;
 			}
 
 			// Create a new, shuffled array, then render
 			var shuffled_monsters = shuffle(monsters.slice());
 			render(shuffled_monsters);
 
-			app.addEventListener('click', function (event) {
-				console.log(event.target);
-				var monster = event.target.getAttribute('data-monster');
-				event.target.setAttribute('src', `${monster}.svg`);
-			})
+			// Event Listeners
+			app.addEventListener('click', handleClick, false);
 		})();
 	</script>
 </body>
