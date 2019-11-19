@@ -43,7 +43,6 @@
 <body>
 
 	<h1>Monsters!</h1>
-	<p id="message" aria-live="live">Click a door to reveal the monster. Try not to find the sock.</p>
 	<div id="app"></div>
 
 	<footer>
@@ -72,7 +71,6 @@
 			];
 
 			var app = document.querySelector('#app');
-			var message = document.querySelector("#message");
 			var count = 0;
 
 			/**
@@ -101,20 +99,34 @@
 				return array;
 			};
 
+			function renderLost() {
+				app.innerHTML = `<img class="img-full" alt="" src="https://media.giphy.com/media/13zUNhE9WZspMc/giphy.gif"><h2>Oops, you found a sock! 😄</h2> <button id="play_again">Play Again</button>`;
+			}
+
+			function renderWon() {
+				app.innerHTML = `<img class="img-full" alt="" src="https://media.giphy.com/media/1242bJFCbb3FxC/giphy.gif"><h2>Congratulations, you won! 🎉</h2><p>You found all monsters!</p> <button id="play_again">Play Again</button>`;
+			}
+
+
 			/**
 			 * Render the grid doors to the DOM
-			 * @param  {Array} array The monsters array
 			 */
-			function render(array) {
-				var html = '<div class="row">' + array.map(function (item) {
-					return `<div class="grid" aria-live="polite">
-										<button data-monster="${item}">
-											<img src="door.svg" alt="click to see what\'s behind this door">
-										</button>
-									</div>`;
-				}).join('') + '</div>';
+			function renderMonsters() {
+				// reset the number of monsters found
+				count = 0;
 
-				app.innerHTML = html;
+				// shuffle monsters array
+				shuffle(monsters);
+
+				// create HTML and inject into DOM
+				app.innerHTML = `<p>Click a door to reveal the monster. Try not to find the sock.</p>
+										<div class="row">` + monsters.map(function (item) {
+					return `<div class="grid" aria-live="polite">
+																<button data-monster="${item}">
+																	<img src="door.svg" alt="click to see what\'s behind this door">
+																</button>
+															</div>`;
+				}).join('') + '</div>';
 			}
 
 			/**
@@ -126,9 +138,8 @@
 
 				if (event.target.matches("#play_again")) {
 					// Create a new, shuffled array, then render
-					var shuffled_monsters = shuffle(monsters.slice());
-					render(shuffled_monsters);
-					message.textContent = "Click a door to reveal the monster. Try not to find the sock.";
+					renderMonsters()
+					return;
 				}
 
 				var monster = event.target.closest('[data-monster]');
@@ -137,20 +148,19 @@
 				var id = monster.getAttribute('data-monster');
 				event.target.parentNode.innerHTML = `<img src="${id}.svg" alt="${id}">`;
 
-				// handle message
-				count++;
-				if (id === "sock" && count <= 11) {
-					message.innerHTML = `<p>You lost. :( </p> <button id="play_again">Play Again</button>`;
+				// if lost
+				if (id === "sock") {
+					renderLost();
+					return;
 				}
 
-				if (id === "sock" && count === 12) {
-					message.innerHTML = `Congratulations, you won! <button id="play_again">Play Again</button>`;
+				count++;
+				if (count === (monsters.length - 1)) {
+					renderWon();
 				}
 			}
 
-			// Create a new, shuffled array, then render
-			var shuffled_monsters = shuffle(monsters.slice());
-			render(shuffled_monsters);
+			renderMonsters();
 
 			// Event Listeners
 			document.addEventListener('click', handleClicks, false);
