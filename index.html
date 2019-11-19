@@ -43,8 +43,7 @@
 <body>
 
 	<h1>Monsters!</h1>
-	<p>Click a door to reveal the monster. Try not to find the sock.</p>
-	<p id="message" aria-live="live"></p>
+	<p id="message" aria-live="live">Click a door to reveal the monster. Try not to find the sock.</p>
 	<div id="app"></div>
 
 	<footer>
@@ -122,8 +121,15 @@
 			 * Handle click events
 			 * @param  {Event} event The event object
 			 */
-			function handleClick(event) {
+			function handleClicks(event) {
 				console.log(event.target);
+
+				if (event.target.matches("#play_again")) {
+					// Create a new, shuffled array, then render
+					var shuffled_monsters = shuffle(monsters.slice());
+					render(shuffled_monsters);
+					message.textContent = "Click a door to reveal the monster. Try not to find the sock.";
+				}
 
 				var monster = event.target.closest('[data-monster]');
 				if (!monster) return;
@@ -134,11 +140,11 @@
 				// handle message
 				count++;
 				if (id === "sock" && count <= 11) {
-					message.textContent = "You lost. :(";
+					message.innerHTML = `<p>You lost. :( </p> <button id="play_again">Play Again</button>`;
 				}
 
 				if (id === "sock" && count === 12) {
-					message.textContent = "Congratulations, you won!";
+					message.innerHTML = `Congratulations, you won! <button id="play_again">Play Again</button>`;
 				}
 			}
 
@@ -147,7 +153,7 @@
 			render(shuffled_monsters);
 
 			// Event Listeners
-			app.addEventListener('click', handleClick, false);
+			document.addEventListener('click', handleClicks, false);
 		})();
 	</script>
 </body>
